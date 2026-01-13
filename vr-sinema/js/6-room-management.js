@@ -274,23 +274,40 @@ function confirmDeleteRoom(shouldDelete) {
     document.getElementById('delete-modal').classList.remove('active');
     
     if (shouldDelete) {
+        // Silme işlemini tamamla, SONRA sayfayı yenile
         roomRef.remove().then(() => {
             console.log('✓ Oda sahibi tarafından silindi');
+            location.reload();
+        }).catch(error => {
+            console.error('❌ Oda silme hatası:', error);
+            alert('Oda silinemedi: ' + error.message);
+            location.reload();
         });
     } else {
+        // Şifreli odayı açık bırak
+        const updates = {};
+        
         if (currentRoomData.isPrivate) {
-            roomRef.update({
-                isPrivate: false,
-                password: null
-            });
-            console.log('✓ Şifreli oda açık bırakıldı, şifre silindi');
+            updates.isPrivate = false;
+            updates.password = null;
         }
         
-        transferOwnership(currentRoomId);
-        leaveRoomSilent();
+        // Önce güncellemeleri yap, sonra sahipliği transfer et
+        roomRef.update(updates).then(() => {
+            console.log('✓ Şifreli oda açık bırakıldı, şifre silindi');
+            transferOwnership(currentRoomId);
+            leaveRoomSilent();
+            
+            // Tüm işlemler tamamlandıktan sonra sayfayı yenile
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+        }).catch(error => {
+            console.error('❌ Oda güncelleme hatası:', error);
+            leaveRoomSilent();
+            location.reload();
+        });
     }
-    
-    location.reload();
 }
 
 // Oda sahipliğini transfer et

@@ -491,26 +491,28 @@ YouTube, Google Drive, Catbox, Bunny CDN, HLS streams veya direkt .mp4/.webm/.mo
 </a-scene>
 
 <!-- JavaScript Modülleri -->
-<script src="js/1-config.js"></script>
-<script src="js/2-globals.js"></script>
-<script src="js/3-environments.js"></script>
-<script src="js/4-video-detection.js"></script>
-<script src="js/5-ui-functions.js"></script>
-<script src="js/6-room-management.js"></script>
-<script src="js/7-video-setup.js"></script>
-<script src="js/8-video-controls.js"></script>
-<script src="js/9-screen-position.js"></script>
-<script src="js/10-chat-system.js"></script>
-<script src="js/11-settings-panel.js"></script>
-<script src="js/12-spatial-audio.js"></script>
-<script src="js/13-vr-ui-components.js"></script>
-<script src="js/14-vr-ui-updates.js"></script>
-<script src="js/15-firebase-sync.js"></script>
-<script src="js/16-keyboard-shortcuts.js"></script>
-<script src="js/17-performance-monitor.js"></script>
-<script src="js/18-error-handling.js"></script>
-<script src="js/19-debug-tools.js"></script>
-<script src="js/20-init.js"></script>
+<script>
+const v = new Date().getTime();
+document.write('<script src="js/1-config.js?v=' + v + '"><\/script>');
+document.write('<script src="js/2-globals.js?v=' + v + '"><\/script>');
+document.write('<script src="js/3-environments.js?v=' + v + '"><\/script>');
+document.write('<script src="js/4-video-detection.js?v=' + v + '"><\/script>');
+document.write('<script src="js/5-ui-functions.js?v=' + v + '"><\/script>');
+document.write('<script src="js/6-room-management.js?v=' + v + '"><\/script>');
+document.write('<script src="js/7-video-setup.js?v=' + v + '"><\/script>');
+document.write('<script src="js/8-video-controls.js?v=' + v + '"><\/script>');
+document.write('<script src="js/9-screen-position.js?v=' + v + '"><\/script>');
+document.write('<script src="js/10-chat-system.js?v=' + v + '"><\/script>');
+document.write('<script src="js/11-settings-panel.js?v=' + v + '"><\/script>');
+document.write('<script src="js/12-spatial-audio.js?v=' + v + '"><\/script>');
+document.write('<script src="js/13-vr-ui-components.js?v=' + v + '"><\/script>');
+document.write('<script src="js/14-vr-ui-updates.js?v=' + v + '"><\/script>');
+document.write('<script src="js/15-firebase-sync.js?v=' + v + '"><\/script>');
+document.write('<script src="js/17-performance-monitor.js?v=' + v + '"><\/script>');
+document.write('<script src="js/18-error-handling.js?v=' + v + '"><\/script>');
+document.write('<script src="js/19-debug-tools.js?v=' + v + '"><\/script>');
+document.write('<script src="js/20-init.js?v=' + v + '"><\/script>');
+</script>
 
 </body>
 </html>

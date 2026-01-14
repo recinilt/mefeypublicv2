@@ -1,5 +1,5 @@
 // ============================================
-// VR UI PANEL SİSTEMİ (Sol Tarafta Kontroller)
+// VR UI PANEL SİSTEMİ (Sol Tarafta, 90 Derece Dönmüş)
 // ============================================
 
 function createVRUIPanel() {
@@ -9,7 +9,12 @@ function createVRUIPanel() {
     // Ana Panel Container
     vrUIPanel = document.createElement('a-entity');
     vrUIPanel.setAttribute('id', 'vr-ui-panel');
-    vrUIPanel.setAttribute('position', `${VR_UI_CONFIG.position.x} ${VR_UI_CONFIG.position.y} ${VR_UI_CONFIG.position.z}`);
+    vrUIPanel.setAttribute('position', 
+        `${VR_UI_CONFIG.position.x} ${VR_UI_CONFIG.position.y} ${VR_UI_CONFIG.position.z}`
+    );
+    vrUIPanel.setAttribute('rotation', 
+        `${VR_UI_CONFIG.rotation.x} ${VR_UI_CONFIG.rotation.y} ${VR_UI_CONFIG.rotation.z}`
+    );
     
     // Panel Arka Plan
     const panelBg = document.createElement('a-plane');
@@ -22,7 +27,7 @@ function createVRUIPanel() {
     
     // Başlık
     const title = document.createElement('a-text');
-    title.setAttribute('value', 'EKRAN KONTROLÜ');
+    title.setAttribute('value', 'EKRAN KONTROLU');
     title.setAttribute('align', 'center');
     title.setAttribute('width', '2');
     title.setAttribute('position', '0 1.3 0.01');
@@ -41,7 +46,7 @@ function createVRUIPanel() {
     // Camera rig'e ekle (her zaman görünür olsun)
     camera.appendChild(vrUIPanel);
     
-    console.log('✓ VR UI Panel oluşturuldu');
+    console.log('✓ VR UI Panel oluşturuldu (Sol tarafta, 90° dönük)');
 }
 
 function createScreenControlButtons(panel) {
@@ -75,10 +80,10 @@ function createVideoControlButtons(panel) {
     const y = -0.8;
     
     const buttons = [
-        { x: -0.6, label: '⏮', action: () => seekVideo(-10) },
-        { x: -0.3, label: '⏯', action: () => togglePlayPause() },
+        { x: -0.6, label: '⮜', action: () => seekVideo(-10) },
+        { x: -0.3, label: '⯈', action: () => togglePlayPause() },
         { x: 0,    label: '⏹', action: () => stopVideo() },
-        { x: 0.3,  label: '⏭', action: () => seekVideo(10) }
+        { x: 0.3,  label: '⮞', action: () => seekVideo(10) }
     ];
     
     buttons.forEach(btn => {
@@ -232,4 +237,4 @@ function moveScreen(direction) {
     console.log('✓ Ekran pozisyonu:', screenPosition);
 }
 
-console.log('✓ VR UI Panel sistemi yüklendi');
+console.log('✓ VR UI Panel sistemi yüklendi (90° döndürülmüş, sol tarafta)');

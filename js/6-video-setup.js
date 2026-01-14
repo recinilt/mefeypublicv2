@@ -97,6 +97,13 @@ function setupVideoTexture(videoUrl, screenSize, originalUrl) {
     videoAsset.loop = false;
     videoAsset.playsInline = true;
     
+    // TS video desteği için MIME type ayarla
+    if (videoUrl.includes('.ts')) {
+        videoAsset.type = 'video/mp2t';
+    } else if (videoUrl.includes('.m3u8')) {
+        videoAsset.type = 'application/x-mpegURL';
+    }
+    
     assets.appendChild(videoAsset);
     videoElement = videoAsset;
     
@@ -143,23 +150,28 @@ function showVideoError(type, error, url) {
     message += '<strong>Çözüm Önerileri:</strong><br>';
     
     if (service === 'unknown' || service === 'cors-proxy') {
-        message += '1. <strong>Zerostorage.net</strong> kullanın (Ücretsiz):<br>';
+        message += '1. <strong>Cloudinary</strong> kullanın (Ücretsiz):<br>';
+        message += '   • https://cloudinary.com adresine kaydolun<br>';
+        message += '   • Videoyu yükleyin<br>';
+        message += '   • URL formatı: res.cloudinary.com/[name]/video/upload/...<br><br>';
+        
+        message += '2. <strong>Zerostorage.net</strong> kullanın (Ücretsiz):<br>';
         message += '   • https://zerostorage.net adresine gidin<br>';
         message += '   • Videoyu yükleyin<br>';
         message += '   • Embed veya direkt linki kopyalayın<br><br>';
         
-        message += '2. <strong>Catbox.moe</strong> kullanın (Ücretsiz):<br>';
+        message += '3. <strong>Catbox.moe</strong> kullanın (Ücretsiz):<br>';
         message += '   • https://catbox.moe adresine gidin<br>';
         message += '   • Videoyu yükleyin<br>';
         message += '   • Direkt linki kopyalayın<br><br>';
         
-        message += '3. <strong>Bunny.net</strong> kullanın ($1/ay):<br>';
+        message += '4. <strong>Bunny.net</strong> kullanın ($1/ay):<br>';
         message += '   • https://bunny.net adresine kaydolun<br>';
         message += '   • Storage Zone oluşturun<br>';
         message += '   • CDN linkini kullanın<br><br>';
         
-        message += '4. <strong>Direkt .mp4 linki</strong> bulun<br>';
-        message += '   • Link .mp4 ile bitmelidir<br>';
+        message += '5. <strong>Direkt video linki</strong> (.mp4, .webm, .ts, .m3u8)<br>';
+        message += '   • Link video formatı ile bitmelidir<br>';
         message += '   • CORS izni olmalıdır<br>';
     } else {
         message += '• Linkin doğru olduğundan emin olun<br>';
@@ -176,4 +188,4 @@ function showVideoError(type, error, url) {
     `;
 }
 
-console.log('✓ Video kurulum fonksiyonları yüklendi (Zerostorage desteği eklendi)');
+console.log('✓ Video kurulum fonksiyonları yüklendi (TS/M3U8 ve Cloudinary desteği eklendi)');

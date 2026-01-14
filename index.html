@@ -44,11 +44,11 @@
             <input type="text" id="room-name-input" placeholder="Oda Adı (örn: Film Gecesi)" />
             
             <div class="info-box">
-                💡 <strong>Desteklenen Formatlar:</strong><br>
-                🎥 <strong>Video:</strong> MP4, WebM, OGG, MKV, AVI, MOV, FLV, vb.<br>
-                📝 <strong>Altyazı:</strong> SRT, VTT, ASS, SSA, SUB<br>
-                📺 <strong>Platformlar:</strong> YouTube, Google Drive, Catbox, Bunny CDN<br>
-            </div>
+    💡 <strong>Desteklenen Formatlar:</strong><br>
+    🎥 <strong>Video:</strong> MP4, WebM, OGG, MKV, AVI, MOV, FLV, TS, M3U8<br>
+    📝 <strong>Altyazı:</strong> SRT, VTT, ASS, SSA, SUB<br>
+    📺 <strong>Platformlar:</strong> YouTube, Google Drive, Cloudinary, Zerostorage, Catbox, Bunny CDN<br>
+</div>
             
             <label for="video-url-input">🎥 Video URL:</label>
 <textarea id="video-url-input" placeholder="Video URL
@@ -56,10 +56,13 @@
 Desteklenen:
 - YouTube: https://www.youtube.com/watch?v=...
 - Google Drive: https://drive.google.com/file/d/.../view
+- Cloudinary: https://res.cloudinary.com/.../video/upload/...
+- Zerostorage: https://zerostorage.net/embed/...
 - Direkt: https://example.com/video.mp4
+- Direkt: https://example.com/video.ts
 - Catbox: https://files.catbox.moe/abc.mp4
 - Bunny CDN: https://zone.b-cdn.net/video.mp4
-- Zerostorage: https://zerostorage.net/embed/..."></textarea>
+- HLS Stream: https://example.com/stream.m3u8"></textarea>
             
             <label for="subtitle-url-input">📝 Altyazı URL (Opsiyonel):</label>
             <input type="text" id="subtitle-url-input" placeholder="https://example.com/subtitle.srt" />

@@ -11,7 +11,9 @@ function detectVideoService(url) {
         }
     }
     
-    if (url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg')) {
+    // Direkt video dosyası kontrolü (TS dahil)
+    if (url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || 
+        url.includes('.ts') || url.includes('.m3u8')) {
         return 'direct';
     }
     
@@ -59,4 +61,4 @@ function extractVideoId(url, service) {
     return match ? match[1] : null;
 }
 
-console.log('✓ Video algılama fonksiyonları yüklendi (Zerostorage desteği eklendi)');
+console.log('✓ Video algılama fonksiyonları yüklendi (TS/M3U8 ve Cloudinary desteği eklendi)');

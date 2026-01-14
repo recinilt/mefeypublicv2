@@ -14,7 +14,7 @@ const SYNC_DELAY = 3000;
 // Desteklenen Video Formatları
 const SUPPORTED_VIDEO_FORMATS = [
     'mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv',
-    'm4v', 'flv', '3gp', 'wmv'
+    'm4v', 'flv', '3gp', 'wmv', 'ts', 'm3u8'
 ];
 
 // Desteklenen Altyazı Formatları
@@ -89,9 +89,12 @@ const VIDEO_SERVICES = {
         pattern: /zerostorage\.net\/(?:embed\/|file\/)([a-zA-Z0-9-]+)/,
         transform: (match) => {
             const fileId = match[1];
-            // Zerostorage direkt stream URL'i
             return `https://zerostorage.net/file/${fileId}`;
         }
+    },
+    cloudinary: {
+        pattern: /res\.cloudinary\.com\/([^\/]+)\/video\/upload\//,
+        transform: (url) => url
     },
     bunny: {
         pattern: /(bunnycdn|b-cdn)\.net/,
@@ -103,9 +106,10 @@ const VIDEO_SERVICES = {
     }
 };
 
-// VR Kontrol Paneli Pozisyonu
+// VR Kontrol Paneli Pozisyonu (Sol tarafta, 90 derece dönmüş)
 const VR_UI_CONFIG = {
-    position: { x: -2, y: 1.6, z: -1.5 },
+    position: { x: -3.5, y: 1.6, z: -5 },  // Solda ve uzakta
+    rotation: { x: 0, y: 90, z: 0 },       // 90 derece sağa dönük
     scale: 0.8,
     buttonSize: 0.3,
     seekBarWidth: 2
@@ -117,3 +121,5 @@ console.log('✓ Altyazı formatları:', SUPPORTED_SUBTITLE_FORMATS.length);
 console.log('✓ Cloudflare Worker:', CLOUDFLARE_WORKER);
 console.log('✓ Google Drive proxy: Aktif');
 console.log('✓ Zerostorage desteği: Aktif');
+console.log('✓ Cloudinary desteği: Aktif');
+console.log('✓ TS/M3U8 video desteği: Aktif');

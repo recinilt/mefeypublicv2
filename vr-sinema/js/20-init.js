@@ -150,7 +150,7 @@ console.log('%c  vrCinemaDebug.listListeners()  → Aktif dinleyiciler', 'color:
 console.log('%c╚════════════════════════════════════════════╝', 'color: #667eea;');
 
 // ============================================
-// VERSİYON BİLGİSİ
+// VERSİYON BİLGİSİ 
 // ============================================
 const VERSION = '2.1.0-FULL';
 const BUILD_DATE = '2025-01-14';

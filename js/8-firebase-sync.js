@@ -1,5 +1,5 @@
 // ============================================
-// FİREBASE SENKRONİZASYON SİSTEMİ - OPTİMİZE EDİLMİŞ
+// FİREBASE SENKRONİZASYON SİSTEMİ - TAM SENKRON
 // ============================================
 
 function listenToRoomUpdates() {
@@ -14,44 +14,77 @@ function listenToRoomUpdates() {
         
         const now = Date.now();
         
-        // Video durduruldu
-        if (!state.isPlaying && !videoElement.paused) {
-            videoElement.pause();
-            videoElement.currentTime = state.currentTime;
-            console.log('⏸️ Video durduruldu (sync)');
+        // Video durduruldu veya seek yapıldı (oynatma yok)
+        if (!state.isPlaying) {
+            if (!videoElement.paused) {
+                videoElement.pause();
+                console.log('⏸️ Video durduruldu (sync)');
+            }
+            
+            // Seek değişikliği varsa güncelle
+            if (Math.abs(videoElement.currentTime - state.currentTime) > 0.5) {
+                videoElement.currentTime = state.currentTime;
+                console.log(`🎯 Pozisyon senkronize: ${state.currentTime.toFixed(1)}s`);
+            }
             return;
         }
         
-        // Video başlatılacak
-        if (state.isPlaying && videoElement.paused && state.startTimestamp) {
+        // Video başlatılacak (SENKRON)
+        if (state.isPlaying && state.startTimestamp) {
             const waitTime = state.startTimestamp - now;
             
-            if (waitTime > 0) {
-                // Henüz başlama zamanı gelmedi
+            if (waitTime > 100) {
+                // Henüz başlama zamanı gelmedi - BEKLENİYOR
                 console.log(`⏱️ ${(waitTime/1000).toFixed(1)}s sonra başlayacak`);
                 showSyncStatus(`⏱️ ${Math.ceil(waitTime/1000)}s sonra başlıyor...`);
                 
+                // Pozisyonu hemen ayarla
+                if (Math.abs(videoElement.currentTime - state.currentTime) > 0.5) {
+                    videoElement.currentTime = state.currentTime;
+                }
+                
+                // Videoyu durdur (henüz başlamadı)
+                if (!videoElement.paused) {
+                    videoElement.pause();
+                }
+                
+                // Timer kur
                 if (syncTimeout) clearTimeout(syncTimeout);
                 syncTimeout = setTimeout(() => {
                     videoElement.currentTime = state.currentTime;
-                    videoElement.play().catch(err => console.log('Auto-play engellendi:', err));
-                    console.log('▶️ Video başlatıldı (sync)');
+                    videoElement.play().then(() => {
+                        console.log('▶️ Video başlatıldı (SENKRON)');
+                        console.log(`   → Türkiye: ${new Date().toLocaleTimeString('tr-TR')}`);
+                        console.log(`   → İngiltere: ${new Date().toLocaleTimeString('en-GB', {timeZone: 'Europe/London'})}`);
+                        console.log(`   → UTC: ${new Date().toISOString()}`);
+                    }).catch(err => {
+                        console.log('Auto-play engellendi:', err);
+                    });
                 }, waitTime);
-            } else {
-                // Başlama zamanı geçmiş, gecikmeli başlat
-                const elapsedSeconds = Math.abs(waitTime) / 1000;
-                const newSeek = state.currentTime + elapsedSeconds;
                 
-                videoElement.currentTime = newSeek;
-                videoElement.play().catch(err => console.log('Auto-play engellendi:', err));
-                console.log(`▶️ Video başlatıldı (${elapsedSeconds.toFixed(1)}s gecikmeli)`);
+            } else if (waitTime > -1000) {
+                // Tam şimdi başlamalı (±1 saniye tolerans)
+                videoElement.currentTime = state.currentTime;
+                videoElement.play().then(() => {
+                    console.log('▶️ Video başlatıldı (ANINDA SENKRON)');
+                }).catch(err => {
+                    console.log('Auto-play engellendi:', err);
+                });
+                
+            } else {
+                // Geç kalındı - Gecikmeli başlatma
+                const elapsedSeconds = Math.abs(waitTime) / 1000;
+                const catchupTime = state.currentTime + elapsedSeconds;
+                
+                videoElement.currentTime = catchupTime;
+                videoElement.play().then(() => {
+                    console.log(`▶️ Video başlatıldı (${elapsedSeconds.toFixed(1)}s GECİKMELİ)`);
+                    console.log(`   → Hedef: ${state.currentTime.toFixed(1)}s`);
+                    console.log(`   → Gerçek: ${catchupTime.toFixed(1)}s`);
+                }).catch(err => {
+                    console.log('Auto-play engellendi:', err);
+                });
             }
-        }
-        
-        // Seek değişikliği (play durumunda değilse)
-        if (!state.isPlaying && Math.abs(videoElement.currentTime - state.currentTime) > 0.5) {
-            videoElement.currentTime = state.currentTime;
-            console.log(`🎯 Seek senkronize edildi: ${state.currentTime.toFixed(1)}s`);
         }
     });
     
@@ -72,7 +105,10 @@ function listenToRoomUpdates() {
         }
     });
     
-    console.log('✓ Olay bazlı senkronizasyon aktif (Timezone-aware)');
+    console.log('✓ Tam senkron sistem aktif');
+    console.log('   → Tüm dünya aynı anda başlar');
+    console.log('   → UTC timestamp tabanlı');
+    console.log('   → ±1 saniye tolerans');
 }
 
 // Throttled versiyon
@@ -107,4 +143,8 @@ function syncVideoState() {
     });
 }
 
-console.log('✓ Firebase senkronizasyon sistemi yüklendi (Timezone-aware, 2sn debounce)');
+console.log('✓ Firebase senkronizasyon sistemi yüklendi');
+console.log('   → Timezone-aware (UTC)');
+console.log('   → 2sn debounce');
+console.log('   → 4sn geri sarma');
+console.log('   → Tam senkron başlatma');

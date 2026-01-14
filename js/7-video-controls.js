@@ -1,11 +1,12 @@
 // ============================================
-// VİDEO KONTROL FONKSİYONLARI - DEBOUNCE İLE
+// VİDEO KONTROL FONKSİYONLARI - TAM SENKRON
 // ============================================
 
 // Debounce için son tıklama zamanı
 let lastSeekTime = 0;
 let seekDebounceTimeout = null;
 const SEEK_DEBOUNCE_DELAY = 2000; // 2 saniye
+const SEEK_REWIND_SECONDS = 4;    // 4 saniye geri sar
 
 function canControlVideo() {
     if (!currentRoomData) return false;
@@ -77,7 +78,7 @@ function stopVideo() {
     showSyncStatus('⏹ Video başa sarıldı');
 }
 
-// Debounced Seek - 2 saniye içinde tekrar tıklanırsa sayım sıfırlanır
+// Debounced Seek - 4 saniye öncesinden senkron başlatma
 function seekVideo(seconds) {
     if (!canControlVideo()) {
         alert('⚠️ Bu odada sadece oda sahibi video kontrolü yapabilir!');
@@ -99,28 +100,48 @@ function seekVideo(seconds) {
     
     lastSeekTime = now;
     
-    // Lokal olarak hemen seek yap (gecikme olmasın)
-    const newTime = Math.max(0, Math.min(videoElement.duration, videoElement.currentTime + seconds));
-    videoElement.currentTime = newTime;
+    // Hedef zamanı hesapla
+    const targetTime = Math.max(0, Math.min(videoElement.duration, videoElement.currentTime + seconds));
     
-    console.log(`⏩ Lokal seek: ${seconds > 0 ? 'ileri' : 'geri'} ${Math.abs(seconds)}sn → ${newTime.toFixed(1)}s`);
-    showSyncStatus(`⏩ ${seconds > 0 ? '+' : ''}${seconds}sn (bekleniyor...)`);
+    // Geçici olarak hedef zamanı göster (senkron olmadan)
+    videoElement.currentTime = targetTime;
+    console.log(`⏩ Geçici seek: ${seconds > 0 ? 'ileri' : 'geri'} ${Math.abs(seconds)}sn → ${targetTime.toFixed(1)}s`);
+    showSyncStatus(`⏩ ${seconds > 0 ? '+' : ''}${seconds}sn (2sn bekleniyor...)`);
     
-    // 2 saniye sonra Firebase'e gönder
+    // 2 saniye sonra senkron başlatma
     seekDebounceTimeout = setTimeout(() => {
-        const finalTime = videoElement.currentTime;
+        const finalTargetTime = videoElement.currentTime;
+        
+        // 4 saniye geri sar (ama minimum 0)
+        const rewindTime = Math.max(0, finalTargetTime - SEEK_REWIND_SECONDS);
+        
+        // 3 saniye sonra başlatma zamanı
+        const startTimestamp = Date.now() + SYNC_DELAY;
+        
+        // Video duruyorsa durdur, oynatılacaksa oynat
+        const wasPlaying = !videoElement.paused;
+        videoElement.pause();
+        videoElement.currentTime = rewindTime;
         
         roomRef.child('videoState').update({
-            currentTime: finalTime,
+            isPlaying: wasPlaying,
+            currentTime: rewindTime,
+            startTimestamp: wasPlaying ? startTimestamp : null,
             lastUpdate: Date.now()
         }).then(() => {
-            console.log(`✓ Firebase senkronize edildi: ${finalTime.toFixed(1)}s`);
-            showSyncStatus('✓ Senkronize edildi');
+            console.log(`✓ Senkron seek: ${rewindTime.toFixed(1)}s → ${finalTargetTime.toFixed(1)}s`);
+            console.log(`✓ 4 saniye geri sarıldı: ${finalTargetTime.toFixed(1)}s - 4s = ${rewindTime.toFixed(1)}s`);
+            
+            if (wasPlaying) {
+                showSyncStatus(`⏱️ 3 saniyede ${formatTime(rewindTime)} başlıyor`);
+            } else {
+                showSyncStatus(`✓ Senkronize: ${formatTime(rewindTime)}`);
+            }
         });
     }, SEEK_DEBOUNCE_DELAY);
 }
 
-// Seek bar ile pozisyon değiştirme (VR için)
+// Seek bar ile pozisyon değiştirme - 4 saniye öncesinden senkron
 function seekToPosition(percentage) {
     if (!canControlVideo()) {
         alert('⚠️ Bu odada sadece oda sahibi video kontrolü yapabilir!');
@@ -142,23 +163,43 @@ function seekToPosition(percentage) {
     
     lastSeekTime = now;
     
-    // Lokal olarak hemen seek yap
-    const newTime = videoElement.duration * percentage;
-    videoElement.currentTime = newTime;
+    // Hedef zamanı hesapla
+    const targetTime = videoElement.duration * percentage;
     
-    console.log(`🎯 Seek bar tıklandı: %${(percentage * 100).toFixed(1)} → ${newTime.toFixed(1)}s`);
-    showSyncStatus(`🎯 ${formatTime(newTime)} (bekleniyor...)`);
+    // Geçici olarak hedef zamanı göster
+    videoElement.currentTime = targetTime;
+    console.log(`🎯 Seek bar: %${(percentage * 100).toFixed(1)} → ${targetTime.toFixed(1)}s`);
+    showSyncStatus(`🎯 ${formatTime(targetTime)} (2sn bekleniyor...)`);
     
-    // 2 saniye sonra Firebase'e gönder
+    // 2 saniye sonra senkron başlatma
     seekDebounceTimeout = setTimeout(() => {
-        const finalTime = videoElement.currentTime;
+        const finalTargetTime = videoElement.currentTime;
+        
+        // 4 saniye geri sar (ama minimum 0)
+        const rewindTime = Math.max(0, finalTargetTime - SEEK_REWIND_SECONDS);
+        
+        // 3 saniye sonra başlatma zamanı
+        const startTimestamp = Date.now() + SYNC_DELAY;
+        
+        // Video duruyorsa durdur, oynatılacaksa oynat
+        const wasPlaying = !videoElement.paused;
+        videoElement.pause();
+        videoElement.currentTime = rewindTime;
         
         roomRef.child('videoState').update({
-            currentTime: finalTime,
+            isPlaying: wasPlaying,
+            currentTime: rewindTime,
+            startTimestamp: wasPlaying ? startTimestamp : null,
             lastUpdate: Date.now()
         }).then(() => {
-            console.log(`✓ Firebase senkronize edildi: ${finalTime.toFixed(1)}s`);
-            showSyncStatus('✓ Senkronize edildi');
+            console.log(`✓ Senkron seek bar: ${rewindTime.toFixed(1)}s → ${finalTargetTime.toFixed(1)}s`);
+            console.log(`✓ 4 saniye geri sarıldı: ${finalTargetTime.toFixed(1)}s - 4s = ${rewindTime.toFixed(1)}s`);
+            
+            if (wasPlaying) {
+                showSyncStatus(`⏱️ 3 saniyede ${formatTime(rewindTime)} başlıyor`);
+            } else {
+                showSyncStatus(`✓ Senkronize: ${formatTime(rewindTime)}`);
+            }
         });
     }, SEEK_DEBOUNCE_DELAY);
 }
@@ -179,4 +220,7 @@ function formatTime(seconds) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-console.log('✓ Video kontrol fonksiyonları yüklendi (2 saniyelik debounce ile)');
+console.log('✓ Video kontrol fonksiyonları yüklendi');
+console.log('   → 2 saniyelik debounce');
+console.log('   → 4 saniye geri sarma');
+console.log('   → Tam senkron başlatma');

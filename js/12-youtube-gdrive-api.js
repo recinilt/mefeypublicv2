@@ -35,7 +35,6 @@ async function getYouTubeVideoInfo(videoId) {
 }
 
 function parseYouTubeDuration(duration) {
-    // PT1H2M10S formatını parse et
     const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
     const hours = parseInt(match[1] || 0);
     const minutes = parseInt(match[2] || 0);
@@ -104,13 +103,11 @@ async function getGoogleDriveFileInfo(fileId) {
 
 // Google Drive Video Stream URL
 function getGoogleDriveStreamUrl(fileId) {
-    // Direkt stream için API key gerekmiyor
     return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }
 
-// Video URL İşleme (YouTube & Google Drive desteği ile)
+// Video URL İşleme
 async function processVideoUrl(url) {
-    // YouTube
     const youtubeMatch = url.match(/(youtu\.be\/|youtube\.com\/(watch\?v=|embed\/|v\/|shorts\/))([\w-]{11})/);
     if (youtubeMatch) {
         const videoId = youtubeMatch[3];
@@ -124,7 +121,6 @@ async function processVideoUrl(url) {
         };
     }
     
-    // Google Drive
     const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (driveMatch) {
         const fileId = driveMatch[1];
@@ -139,7 +135,6 @@ async function processVideoUrl(url) {
         };
     }
     
-    // Direkt video link
     const extension = url.split('.').pop().toLowerCase().split('?')[0];
     if (SUPPORTED_VIDEO_FORMATS.includes(extension)) {
         return {
@@ -155,7 +150,7 @@ async function processVideoUrl(url) {
     };
 }
 
-// YouTube Search UI
+// YouTube Search UI - DÜZELTİLMİŞ
 function showYouTubeSearchModal() {
     const query = prompt('🔍 YouTube\'da ara:');
     if (!query) return;
@@ -171,7 +166,7 @@ function showYouTubeSearchModal() {
         results.forEach(video => {
             html += `
                 <div class="youtube-result" style="padding: 10px; border-bottom: 1px solid #ddd; cursor: pointer;" 
-                     onclick="selectYouTubeVideo('${video.url}')">
+                     onclick="selectYouTubeVideo('${escapeHtml(video.url)}')">
                     <img src="${video.thumbnail}" style="width: 120px; float: left; margin-right: 10px;">
                     <strong>${escapeHtml(video.title)}</strong><br>
                     <small>${escapeHtml(video.channelTitle)}</small>
@@ -179,18 +174,33 @@ function showYouTubeSearchModal() {
             `;
         });
         
-        html += '</div><br><button onclick="showMainMenu()">◀ Geri</button>';
+        html += '</div><br><button onclick="showCreateRoom()">◀ Oda Oluşturmaya Dön</button>';
         
-        document.getElementById('ui-overlay').classList.remove('hidden');
-        document.querySelector('.ui-container').innerHTML = html;
+        const uiOverlay = document.getElementById('ui-overlay');
+        const uiContainer = uiOverlay.querySelector('.ui-container');
+        
+        if (uiOverlay && uiContainer) {
+            uiOverlay.classList.remove('hidden');
+            uiContainer.innerHTML = html;
+        }
     });
 }
 
+// YouTube video seçimi - DÜZELTİLMİŞ
 function selectYouTubeVideo(url) {
-    document.getElementById('video-url-input').value = url;
-    document.getElementById('create-room').style.display = 'block';
-    document.getElementById('ui-overlay').querySelector('.ui-container').innerHTML = '';
+    console.log('✓ YouTube video seçildi:', url);
+    
+    // Ana menüye dön ve oda oluşturma ekranını göster
     showCreateRoom();
+    
+    // Video URL'sini doldur
+    const videoUrlInput = document.getElementById('video-url-input');
+    if (videoUrlInput) {
+        videoUrlInput.value = url;
+        console.log('✓ Video URL input\'a yazıldı');
+    } else {
+        console.error('❌ video-url-input elementi bulunamadı!');
+    }
 }
 
 console.log('✓ YouTube & Google Drive API sistemi yüklendi');

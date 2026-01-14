@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VR Sinema - Ultimate Versiyon</title>
     
     <!-- A-Frame & Kütüphaneler -->
@@ -16,6 +16,21 @@
     
     <!-- Ana CSS -->
     <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        /* Mobil için titreme düzeltmesi */
+        body {
+            overscroll-behavior: none;
+            touch-action: pan-x pan-y;
+        }
+        
+        a-scene {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -44,14 +59,14 @@
             <input type="text" id="room-name-input" placeholder="Oda Adı (örn: Film Gecesi)" />
             
             <div class="info-box">
-    💡 <strong>Desteklenen Formatlar:</strong><br>
-    🎥 <strong>Video:</strong> MP4, WebM, OGG, MKV, AVI, MOV, FLV, TS, M3U8<br>
-    📝 <strong>Altyazı:</strong> SRT, VTT, ASS, SSA, SUB<br>
-    📺 <strong>Platformlar:</strong> YouTube, Google Drive, Cloudinary, Zerostorage, Catbox, Bunny CDN<br>
-</div>
+                💡 <strong>Desteklenen Formatlar:</strong><br>
+                🎥 <strong>Video:</strong> MP4, WebM, OGG, MKV, AVI, MOV, FLV, TS, M3U8<br>
+                📝 <strong>Altyazı:</strong> SRT, VTT, ASS, SSA, SUB<br>
+                📺 <strong>Platformlar:</strong> YouTube, Google Drive, Cloudinary, Zerostorage, Catbox, Bunny CDN<br>
+            </div>
             
             <label for="video-url-input">🎥 Video URL:</label>
-<textarea id="video-url-input" placeholder="Video URL
+            <textarea id="video-url-input" placeholder="Video URL
 
 Desteklenen:
 - YouTube: https://www.youtube.com/watch?v=...
@@ -126,7 +141,7 @@ Desteklenen:
      VR KONTROL PANELİ (2D)
      ============================================ -->
 <div id="vr-controls">
-    <button onclick="togglePlayPause()">⏯ Play/Pause</button>
+    <button onclick="togglePlayPause()">⯈ Play/Pause</button>
     <button onclick="stopVideo()" class="stop">⏹ Durdur (Başa Sar)</button>
     <button onclick="location.reload()">🚪 Odadan Çık</button>
 </div>
@@ -149,9 +164,14 @@ Desteklenen:
 </div>
 
 <!-- ============================================
-     VR SAHNESİ
+     VR SAHNESİ - MOBİL OPTİMİZE
      ============================================ -->
-<a-scene loading-screen="enabled: false" cursor="rayOrigin: mouse">
+<a-scene 
+    loading-screen="enabled: false" 
+    cursor="rayOrigin: mouse"
+    vr-mode-ui="enabled: true"
+    device-orientation-permission-ui="enabled: true">
+    
     <!-- Ortam -->
     <a-entity 
         id="environment" 
@@ -181,17 +201,17 @@ Desteklenen:
     <a-light type="ambient" color="#444"></a-light>
     <a-light type="directional" position="0 10 5" intensity="0.5"></a-light>
     
-    <!-- Kamera -->
+    <!-- Kamera - MOBİL OPTİMİZE -->
     <a-entity id="camera-rig" position="0 1.6 0">
         <a-camera>
-            <!-- VR Controller Raycaster -->
+            <!-- VR Controller Raycaster - Optimized -->
             <a-entity 
                 cursor="fuse: false; rayOrigin: mouse"
                 raycaster="objects: .clickable; far: 20">
             </a-entity>
         </a-camera>
         
-        <!-- VR Controllers -->
+        <!-- VR Controllers - Optimized -->
         <a-entity 
             id="left-hand" 
             laser-controls="hand: left" 
@@ -207,26 +227,39 @@ Desteklenen:
 </a-scene>
 
 <!-- ============================================
-     UI FONKSİYONLARI
+     UI FONKSİYONLARI - DÜZELTİLMİŞ
      ============================================ -->
 <script>
 // Menü navigasyonu
 function showMainMenu() {
-    document.getElementById('main-menu').style.display = 'block';
-    document.getElementById('create-room').style.display = 'none';
-    document.getElementById('room-list').style.display = 'none';
+    const mainMenu = document.getElementById('main-menu');
+    const createRoom = document.getElementById('create-room');
+    const roomList = document.getElementById('room-list');
+    
+    if (mainMenu) mainMenu.style.display = 'block';
+    if (createRoom) createRoom.style.display = 'none';
+    if (roomList) roomList.style.display = 'none';
 }
 
 function showCreateRoom() {
-    document.getElementById('main-menu').style.display = 'none';
-    document.getElementById('create-room').style.display = 'block';
-    document.getElementById('room-list').style.display = 'none';
+    const mainMenu = document.getElementById('main-menu');
+    const createRoom = document.getElementById('create-room');
+    const roomList = document.getElementById('room-list');
+    
+    if (mainMenu) mainMenu.style.display = 'none';
+    if (createRoom) createRoom.style.display = 'block';
+    if (roomList) roomList.style.display = 'none';
 }
 
 function showRoomList() {
-    document.getElementById('main-menu').style.display = 'none';
-    document.getElementById('create-room').style.display = 'none';
-    document.getElementById('room-list').style.display = 'block';
+    const mainMenu = document.getElementById('main-menu');
+    const createRoom = document.getElementById('create-room');
+    const roomList = document.getElementById('room-list');
+    
+    if (mainMenu) mainMenu.style.display = 'none';
+    if (createRoom) createRoom.style.display = 'none';
+    if (roomList) roomList.style.display = 'block';
+    
     listRooms();
 }
 
@@ -235,19 +268,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const privateCheckbox = document.getElementById('private-room');
     const passwordInput = document.getElementById('room-password');
     
-    if (privateCheckbox) {
+    if (privateCheckbox && passwordInput) {
         privateCheckbox.addEventListener('change', (e) => {
             passwordInput.style.display = e.target.checked ? 'block' : 'none';
         });
     }
 });
-</script>
 
+// Mobil titreme düzeltmesi
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    document.addEventListener('touchmove', function(e) {
+        if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+        }
+    }, { passive: false });
+}
+</script>
 
 <!-- ============================================
      JAVASCRIPT MODÜLLER (13 DOSYA - ULTIMATE VERSİYON)
      ============================================ -->
-     
 <script>
 const v = new Date().getTime(); 
 document.write('<script src="js/apilermapiler.js?v=' + v + '"><\/script>');

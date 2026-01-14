@@ -43,10 +43,12 @@ function getVideoUrl(inputUrl) {
     
     // CORS proxy deneme
     if (service === 'cors-proxy') {
-        console.log('🌍 Genel Proxy Kullanılıyor...');
+        console.log('⚡ Netlify Edge Proxy kullanılıyor...');
         
-        // Cloudflare yerine bunu kullan (Kurulum gerektirmez, hemen çalışır):
-        return `https://corsproxy.io/?${encodeURIComponent(inputUrl)}`;
+        // Otomatik olarak https://luxury-axolotl-2b9fbb.netlify.app adresini alır
+        const MY_PROXY = `${window.location.origin}/proxy?url=`;
+        
+        return `${MY_PROXY}${encodeURIComponent(inputUrl)}`;
     }
     
     return inputUrl;

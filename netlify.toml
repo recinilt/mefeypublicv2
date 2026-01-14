@@ -18,3 +18,10 @@
     Cross-Origin-Embedder-Policy = "unsafe-none"
     Cross-Origin-Opener-Policy = "same-origin"
     X-Content-Type-Options = "nosniff"
+
+
+# Mevcut ayarların altına ekle:
+
+[[edge_functions]]
+  path = "/proxy"
+  function = "proxy"

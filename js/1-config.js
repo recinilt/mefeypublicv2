@@ -5,7 +5,8 @@
 // Firebase'i başlat
 firebase.initializeApp(firebaseConfig);
 
-
+// Cloudflare Worker Proxy (Google Drive için)
+const CLOUDFLARE_WORKER = 'https://mefeypublicv2.recepyeni.workers.dev';
 
 // Senkronizasyon Sabitleri
 const SYNC_DELAY = 3000;
@@ -86,8 +87,8 @@ const VIDEO_SERVICES = {
             // Google Drive direkt download linki
             const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
             
-            // Netlify proxy üzerinden CORS bypass
-            return `${window.location.origin}/proxy?url=${encodeURIComponent(directUrl)}`;
+            // Cloudflare Worker üzerinden CORS bypass
+            return `${CLOUDFLARE_WORKER}?url=${encodeURIComponent(directUrl)}`;
         }
     },
     bunny: {
@@ -111,5 +112,5 @@ const VR_UI_CONFIG = {
 console.log('✓ Yapılandırma yüklendi (Ultimate Versiyon)');
 console.log('✓ Video formatları:', SUPPORTED_VIDEO_FORMATS.length);
 console.log('✓ Altyazı formatları:', SUPPORTED_SUBTITLE_FORMATS.length);
-console.log('✓ YouTube API:', API_KEYS.YOUTUBE_API_KEY !== 'YOUR_YOUTUBE_API_KEY_HERE' ? 'Aktif' : 'Pasif');
-console.log('✓ Google Drive API:', API_KEYS.GOOGLE_DRIVE_API_KEY !== 'YOUR_GOOGLE_DRIVE_API_KEY_HERE' ? 'Aktif' : 'Pasif');
+console.log('✓ Cloudflare Worker:', CLOUDFLARE_WORKER);
+console.log('✓ Google Drive proxy: Aktif');

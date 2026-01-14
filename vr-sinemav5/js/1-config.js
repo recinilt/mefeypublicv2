@@ -2,21 +2,10 @@
 // YAPILANDIRMA VE SABİTLER - ULTIMATE VERSİYON
 // ============================================
 
-
-
 // Firebase'i başlat
 firebase.initializeApp(firebaseConfig);
 
-// API Anahtarları - BURAYA KENDİ API KEYLER GİRİN
-const API_KEYS = {
-    // YouTube Data API v3 Key
-    // https://console.cloud.google.com/apis/credentials adresinden alın
-    YOUTUBE_API_KEY: "YOUR_YOUTUBE_API_KEY_HERE",
-    
-    // Google Drive API Key
-    // https://console.cloud.google.com/apis/credentials adresinden alın
-    GOOGLE_DRIVE_API_KEY: "YOUR_GOOGLE_DRIVE_API_KEY_HERE"
-};
+
 
 // Senkronizasyon Sabitleri
 const SYNC_DELAY = 3000;

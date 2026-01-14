@@ -38,15 +38,7 @@ function checkAPIKeys() {
 // ============================================
 // FİREBASE YAPLANDIRMASI
 // ============================================
-const firebaseConfig = {
-    apiKey: "AIzaSyC60idSLdAiqAjPWAOMaM3g8LAKPGEUwH8",
-    authDomain: "vr-sinema.firebaseapp.com",
-    databaseURL: "https://vr-sinema-default-rtdb.firebaseio.com",
-    projectId: "vr-sinema",
-    storageBucket: "vr-sinema.firebasestorage.app",
-    messagingSenderId: "724648238300",
-    appId: "1:724648238300:web:dceba8c536e8a5ffd96819"
-};
+
 
 // Firebase başlatma
 firebase.initializeApp(firebaseConfig);

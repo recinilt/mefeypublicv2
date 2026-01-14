@@ -1,24 +1,23 @@
 // ============================================
-// BAŞLATMA VE İNİTİALİZATİON - OPTİMİZE EDİLMİŞ
+// BAŞLATMA VE İNİTİALİZATİON - ULTIMATE VERSİYON
 // ============================================
 
 // Konsol logları
-console.log('🎬 VR Sosyal Sinema - Optimize Edilmiş v3.0');
-console.log('📍 Performans Optimizasyonları:');
-console.log('   ✅ Periyodik Firebase update kaldırıldı');
-console.log('   ✅ Sadece 5 hafif ortam (13→5)');
-console.log('   ✅ Sohbet sistemi kaldırıldı');
-console.log('   ✅ Otomatik room refresh kaldırıldı');
-console.log('   ✅ Throttling/Debouncing eklendi');
-console.log('   ✅ Ortam dispose mekanizması');
+console.log('🎬 VR Sosyal Sinema - Ultimate Versiyon v4.0');
+console.log('📍 Yeni Özellikler:');
+console.log('   ✅ Çok formatlı video desteği (mp4, webm, ogg, mkv, avi, vb.)');
+console.log('   ✅ Altyazı desteği (SRT, VTT, ASS, SSA)');
+console.log('   ✅ VR\'da sol tarafta kontrol paneli');
+console.log('   ✅ Ekranı hareket ettirme butonları');
+console.log('   ✅ VR\'da seek bar ve video kontrolleri');
+console.log('   ✅ YouTube API entegrasyonu');
+console.log('   ✅ Google Drive video desteği');
 console.log('⚙️ Özellikler:');
 console.log('   • 5 Hafif Sinema Ortamı');
 console.log('   • Oda Sahipliği Transferi');
-console.log('   • 3 Saniye Tam Senkronizasyon (Olay Bazlı)');
+console.log('   • 3 Saniye Tam Senkronizasyon');
 console.log('   • Kontrol Modu Seçimi');
-console.log('   • Sahipsiz Oda Desteği');
-console.log('   • Şifreli Oda → Şifre Otomatik Silinir');
-console.log('   • ⏹ DURDUR BUTONU (Başa Sar)');
+console.log('   • Şifreli Oda Desteği');
 console.log('Firebase:', firebase.app().name ? 'Bağlı ✓' : 'Bağlı Değil ✗');
 
 // DOM yüklendiğinde
@@ -40,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.addEventListener('enter-vr', () => {
             console.log('✓ VR moduna girildi');
             hideVRControls();
+            // VR UI Panel zaten görünür
         });
         
         scene.addEventListener('exit-vr', () => {
@@ -54,10 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomsListElement = document.getElementById('rooms-list');
     if (roomsListElement) {
         listRooms();
-        
-        // ❌ OTOMATIK REFRESH KALDIRILDI
-        // Artık sadece manuel "Yenile" butonu ile
-        console.log('✓ Manuel refresh aktif (Otomatik refresh yok)');
+        console.log('✓ Manuel refresh aktif');
     }
     
     // Klavye kısayolları
@@ -81,6 +78,30 @@ document.addEventListener('DOMContentLoaded', () => {
             seekVideo(-10);
         }
         
+        // Arrow Up/Down: Ekran yukarı/aşağı
+        if (e.code === 'ArrowUp') {
+            e.preventDefault();
+            moveScreen('up');
+        }
+        
+        if (e.code === 'ArrowDown') {
+            e.preventDefault();
+            moveScreen('down');
+        }
+        
+        // WASD: Ekran hareketi
+        if (e.code === 'KeyW') moveScreen('up');
+        if (e.code === 'KeyS') moveScreen('down');
+        if (e.code === 'KeyA') moveScreen('left');
+        if (e.code === 'KeyD') moveScreen('right');
+        if (e.code === 'KeyQ') moveScreen('backward');
+        if (e.code === 'KeyE') moveScreen('forward');
+        
+        // R: Ekran pozisyonu sıfırla
+        if (e.code === 'KeyR') {
+            moveScreen('reset');
+        }
+        
         // M: Sessiz
         if (e.code === 'KeyM') {
             e.preventDefault();
@@ -100,10 +121,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+        
+        // C: Altyazı aç/kapa
+        if (e.code === 'KeyC') {
+            e.preventDefault();
+            if (subtitleElement) {
+                const isVisible = subtitleElement.getAttribute('visible') === 'true';
+                subtitleElement.setAttribute('visible', !isVisible);
+                console.log('📝 Altyazı:', !isVisible ? 'Açık' : 'Kapalı');
+            }
+        }
     });
     
     console.log('✓ Tüm event listener\'lar kuruldu');
-    console.log('🚀 Beklenen performans artışı: %60-70');
+    console.log('🎮 Klavye Kısayolları:');
+    console.log('   Space: Oynat/Duraklat');
+    console.log('   ←/→: 10sn Geri/İleri');
+    console.log('   ↑/↓ veya W/S: Ekran Yukarı/Aşağı');
+    console.log('   A/D: Ekran Sol/Sağ');
+    console.log('   Q/E: Ekran İleri/Geri');
+    console.log('   R: Ekran Pozisyonu Sıfırla');
+    console.log('   C: Altyazı Aç/Kapa');
+    console.log('   M: Sessiz');
+    console.log('   F: Tam Ekran');
 });
 
 // Sayfa kapatılmadan önce
@@ -122,6 +162,9 @@ window.addEventListener('beforeunload', () => {
         videoElement.src = '';
     }
     
+    // Altyazı temizle
+    removeSubtitle();
+    
     console.log('👋 Bağlantı kesiliyor...');
 });
 
@@ -134,4 +177,4 @@ window.addEventListener('unhandledrejection', (e) => {
     console.error('❌ Promise hatası:', e.reason);
 });
 
-console.log('✓ Uygulama başlatıldı - Optimize Edilmiş - Hazır!');
+console.log('✓ Uygulama başlatıldı - Ultimate Versiyon - Hazır! 🚀');

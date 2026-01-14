@@ -94,7 +94,10 @@ const VIDEO_SERVICES = {
     },
     cloudinary: {
         pattern: /res\.cloudinary\.com\/([^\/]+)\/video\/upload\//,
-        transform: (url) => url
+        transform: (url) => {
+            // Direkt URL'i döndür - dönüşüm gerektirmiyor
+            return url;
+        }
     },
     bunny: {
         pattern: /(bunnycdn|b-cdn)\.net/,
@@ -108,8 +111,8 @@ const VIDEO_SERVICES = {
 
 // VR Kontrol Paneli Pozisyonu (Sol tarafta, 90 derece dönmüş)
 const VR_UI_CONFIG = {
-    position: { x: -3.5, y: 1.6, z: -5 },  // Solda ve uzakta
-    rotation: { x: 0, y: 90, z: 0 },       // 90 derece sağa dönük
+    position: { x: -3.5, y: 1.6, z: -5 },
+    rotation: { x: 0, y: 90, z: 0 },
     scale: 0.8,
     buttonSize: 0.3,
     seekBarWidth: 2

@@ -92,10 +92,10 @@ function setupVideoTexture(videoUrl, screenSize, originalUrl) {
     const videoAsset = document.createElement('video');
     videoAsset.id = 'video-src';
     videoAsset.crossOrigin = 'anonymous';
-    videoAsset.src = videoUrl;
     videoAsset.preload = 'auto';
     videoAsset.loop = false;
     videoAsset.playsInline = true;
+    videoAsset.muted = false;
     
     // TS video desteği için MIME type ayarla
     if (videoUrl.includes('.ts')) {
@@ -107,17 +107,35 @@ function setupVideoTexture(videoUrl, screenSize, originalUrl) {
     assets.appendChild(videoAsset);
     videoElement = videoAsset;
     
-    screen.setAttribute('src', '#video-src');
-    screen.setAttribute('visible', 'true');
-    
+    // Video elementini önce DOM'a ekle, sonra src'yi ayarla
     videoElement.addEventListener('loadedmetadata', () => {
-        console.log('✓ Video yüklendi:', videoElement.duration, 'saniye');
+        console.log('✓ Video metadata yüklendi:', videoElement.duration, 'saniye');
+        console.log('✓ Video boyutları:', videoElement.videoWidth, 'x', videoElement.videoHeight);
+    });
+    
+    videoElement.addEventListener('loadeddata', () => {
+        console.log('✓ Video data yüklendi');
+    });
+    
+    videoElement.addEventListener('canplay', () => {
+        console.log('✓ Video oynatmaya hazır');
+        screen.setAttribute('visible', 'true');
     });
     
     videoElement.addEventListener('error', (e) => {
         console.error('❌ Video yükleme hatası:', e);
+        console.error('❌ Video element error code:', videoElement.error?.code);
+        console.error('❌ Video element error message:', videoElement.error?.message);
         showVideoError('load', e, originalUrl);
     });
+    
+    // Src'yi en son ayarla
+    videoElement.src = videoUrl;
+    videoElement.load();
+    
+    screen.setAttribute('src', '#video-src');
+    
+    console.log('✓ Video elementi oluşturuldu:', videoUrl);
 }
 
 function disposeEnvironment() {

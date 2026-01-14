@@ -37,7 +37,8 @@ function getVideoUrl(inputUrl) {
         const match = inputUrl.match(config.pattern);
         
         if (match) {
-            const transformedUrl = config.transform(match);
+            // Transform fonksiyonuna match yerine inputUrl gönder
+            const transformedUrl = config.transform(match.input || inputUrl);
             console.log('✓ Dönüştürülen URL:', transformedUrl);
             return transformedUrl;
         }

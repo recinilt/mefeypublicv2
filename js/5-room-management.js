@@ -99,16 +99,15 @@ function joinRoom(roomId, password = null) {
                         isOwner: isRoomOwner
                     });
                     
-                    // İzleyici sayısını azalt
-                    roomRef.child('viewers').onDisconnect().transaction((current) => {
-                        return Math.max(0, (current || 0) - 1);
-                    });
+                    // İzleyici sayısını azalt - DÜZELTİLMİŞ
+                    const viewersRef = roomRef.child('viewers');
+                    viewersRef.onDisconnect().set(firebase.database.ServerValue.increment(-1));
                     
-                    // Oda sahipliği transferi
+                    // Oda sahipliği transferi - DÜZELTİLMİŞ
                     if (isRoomOwner) {
-                        roomRef.child('owner').onDisconnect().transaction((currentOwner) => {
-                            findAndTransferOwnership(roomId);
-                            return null;
+                        const ownerRef = roomRef.child('owner');
+                        ownerRef.onDisconnect().remove().then(() => {
+                            console.log('✓ Disconnect handler ayarlandı (owner)');
                         });
                     }
                 }

@@ -43,12 +43,10 @@ function getVideoUrl(inputUrl) {
     
     // CORS proxy deneme
     if (service === 'cors-proxy') {
-        console.log('🚀 Cloudflare Worker Devrede...');
+        console.log('🌍 Genel Proxy Kullanılıyor...');
         
-        // Buranın tam olarak böyle olduğundan emin ol:
-        const MY_PROXY = "https://v-sinema-proxy.recepyeni.workers.dev/?url=";
-        
-        return `${MY_PROXY}${encodeURIComponent(inputUrl)}`;
+        // Cloudflare yerine bunu kullan (Kurulum gerektirmez, hemen çalışır):
+        return `https://corsproxy.io/?${encodeURIComponent(inputUrl)}`;
     }
     
     return inputUrl;
